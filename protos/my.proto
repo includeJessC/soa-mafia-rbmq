@@ -1,0 +1,87 @@
+syntax = "proto3";
+
+service MafiaServer {
+  rpc SetUserName (SetUserNameRequest) returns (ConnectedPlayers) {}
+  rpc GetNotifications (NotificationsRequest) returns (stream NotificationsResponse) {}
+  rpc Disconnect (DisconnectRequest) returns (Empty) {}
+  rpc SetReadyStatus (ReadyRequest) returns (ReadyResponse) {}
+  rpc KillPlayerVote (KillVoteRequest) returns (Empty) {}
+  rpc KillPlayerMafia (KillPlayerMafiaRequest) returns (EndNightResponse) {}
+  rpc CheckPlayer (CheckPlayerRequest) returns (EndNightResponse) {}
+  rpc EndDay (EndDayRequest) returns (EndDayResponse) {}
+  rpc SkipNight (SkipNightRequest) returns (EndNightResponse) {}
+}
+
+message SetUserNameRequest {
+  string session = 1;
+  string name = 2;
+}
+
+message ConnectedPlayers {
+  int32 id = 1;
+  repeated string names = 2;
+}
+
+message NotificationsRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message NotificationsResponse {
+  bool connected = 1;
+  string user_name = 2;
+}
+
+message DisconnectRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message ReadyRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message ReadyResponse {
+  string role = 1;
+  repeated string players = 2;
+  repeated int32 ids = 3;
+}
+
+message KillVoteRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message KillPlayerMafiaRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message EndNightResponse {
+  string checked_role = 1;
+  bool end_game = 2;
+  int32 killed = 3;
+  int32 checked = 4;
+}
+
+message CheckPlayerRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message EndDayRequest {
+  string session = 1;
+  int32 id = 2;
+}
+
+message EndDayResponse {
+  int32 killed = 1;
+  bool end_game = 2;
+}
+
+message SkipNightRequest {
+  string session = 1;
+}
+
+message Empty {}
