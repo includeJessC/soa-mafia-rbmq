@@ -176,7 +176,7 @@ class Server(my_pb2_grpc.MafiaServerServicer):
 if __name__ == '__main__':
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     my_pb2_grpc.add_MafiaServerServicer_to_server(Server(), server)
-    listen_addr = 'localhost:8080'
+    listen_addr = '0.0.0.0:8080'
     server.add_insecure_port(listen_addr)
     server.start()
     server.wait_for_termination()

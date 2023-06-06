@@ -19,8 +19,8 @@ class Client:
         self.stub = None
         self.rabbit_mq_listener = None
         self.rabbit_mq_writer = None
-        self.game_channel = grpc.insecure_channel('localhost:8080')
-        self.notifications_channel = grpc.insecure_channel('localhost:8080')
+        self.game_channel = grpc.insecure_channel('0.0.0.0:8080')
+        self.notifications_channel = grpc.insecure_channel('0.0.0.0:8080')
 
     def start_concuming(self):
         print("Start listening")

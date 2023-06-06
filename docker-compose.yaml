@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 services:
     rabbitmq:
         image: rabbitmq:3-management
@@ -7,6 +7,7 @@ services:
             - "5672:5672"
     server:
         image: annabogacheva/server_mafia_rpc
+        hostname: localhost
         ports:
             - "8080:8080/tcp"
     rabbitmqserver:
