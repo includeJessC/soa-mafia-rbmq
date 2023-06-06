@@ -2,14 +2,26 @@ version: "3.8"
 services:
     rabbitmq:
         image: rabbitmq:3-management
+        container_name: rabbitmq
         ports:
-            - "15672:15672"
-            - "5672:5672"
+            - 15672:15672
+            - 5672:5672
+        healthcheck:
+            test: ["CMD", "rabbitmqctl", "status"]
+            interval: 10s
+            timeout: 3s
+            retries: 5
+
+
     server:
         image: annabogacheva/server_mafia_rpc
-        hostname: localhost
+        container_name: server
         ports:
             - "8080:8080/tcp"
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+
     rabbitmqserver:
         image: annabogacheva/server_mafia_rbmq
         restart: on-failure

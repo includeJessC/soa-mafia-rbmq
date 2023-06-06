@@ -8,7 +8,7 @@ import protos.my_pb2_grpc as my_pb2_grpc
 class RabbitMQClient(object):
     def __init__(self, session_name, user_name):
         self.session_name = session_name
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq', port=5672))
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host='0.0.0.0', port=5672))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=f'chat_{session_name}_{user_name}', exchange_type='fanout')
         result = self.channel.queue_declare(queue=f'chat_{session_name}_{user_name}')
@@ -31,8 +31,8 @@ class RabbitMQClient(object):
 
 
 class RabbitMQServer(object):
-    def __init__(self):
-        self.connection = pika.BlockingConnection(pika.ConnectionParameters('rabbitmq', port=5672))
+    def __init__(self, host_default='0.0.0.0'):
+        self.connection = pika.BlockingConnection(pika.ConnectionParameters(host_default, port=5672))
         self.channel = self.connection.channel()
         self.channel.exchange_declare(exchange=f'chat_server', exchange_type='fanout')
         result = self.channel.queue_declare(queue='chat_server')
@@ -51,11 +51,13 @@ def main():
     stub = None
     while stub is None:
         try:
-            grpc_channel = grpc.insecure_channel('0.0.0.0:8080')
+            grpc_channel = grpc.insecure_channel('server:8080')
             stub = my_pb2_grpc.MafiaServerStub(grpc_channel)
+            stub.GetConnectedPlayers(my_pb2.SessionName(session=''))
         except:
+            print("cannot connect")
             pass
-    server = RabbitMQServer()
+    server = RabbitMQServer('rabbitmq')
 
     def on_response(ch, method, props, body):
         pid = int(props.headers['pid'])
