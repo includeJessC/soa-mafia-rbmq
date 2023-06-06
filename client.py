@@ -5,6 +5,9 @@ import grpc
 import protos.my_pb2 as my_pb2
 import protos.my_pb2_grpc as my_pb2_grpc
 
+import pika
+from rbmq.rbmq import RabbitMQClient, RabbitMQServer
+
 
 class Client:
     def __init__(self):
@@ -14,8 +17,14 @@ class Client:
         self.user_id = 0
         self.connected_players = []
         self.stub = None
+        self.rabbit_mq_listener = None
+        self.rabbit_mq_writer = None
         self.game_channel = grpc.insecure_channel('localhost:8080')
         self.notifications_channel = grpc.insecure_channel('localhost:8080')
+
+    def start_concuming(self):
+        print("Start listening")
+        self.rabbit_mq_listener.channel.start_consuming()
 
     def set_night(self, alive):
         print("NOW STAGE IS NIGHT")
@@ -23,6 +32,27 @@ class Client:
         if self.role == "killed" or self.role == "civilian":
             response = self.stub.SkipNight(my_pb2.SkipNightRequest(session=self.game_name))
         elif self.role == "mafia":
+            self.rabbit_mq_listener = RabbitMQClient(self.game_name, self.user_id)
+            print("If you want to chat with other mafia wtite w, else write k")
+            command = input()
+            if command == "w":
+                th = threading.Thread(target=self.start_concuming, args=())
+                th.start()
+                print("for stop chating write s")
+                self.rabbit_mq_writer = RabbitMQServer()
+                while True:
+                    texted = input()
+                    if texted == 's':
+                        break
+                    else:
+                        texted = texted.encode(encoding='UTF-8', errors='replace')
+                        self.rabbit_mq_writer.channel.basic_publish(
+                            exchange=f'chat_server',
+                            routing_key='rpc_queue',
+                            body=texted,
+                            properties=pika.BasicProperties(
+                                headers={'pid': str(self.user_id), 'session': str(self.game_name), 'time': 'night'}))
+                        self.rabbit_mq_writer.deleted()
             print("Choose player to kill, write his id")
             name_to_deal = int(input())
             response = self.stub.KillPlayerMafia(my_pb2.KillPlayerMafiaRequest(session=self.game_name, id=name_to_deal))
@@ -50,6 +80,26 @@ class Client:
             del alive[response.killed]
             self.set_night(alive)
         print("Alive players:", alive)
+        self.rabbit_mq_listener = RabbitMQClient(self.game_name, self.user_id)
+        print("If you want to chat with others write w, else write k")
+        command = input()
+        if command == "w":
+            th = threading.Thread(target=self.start_concuming, args=())
+            th.start()
+            print("for stop chating write s")
+            while True:
+                self.rabbit_mq_writer = RabbitMQServer()
+                texted = input()
+                if texted == 's':
+                    break
+                else:
+                    texted = texted.encode(encoding='UTF-8', errors='replace')
+                    self.rabbit_mq_writer.channel.basic_publish(
+                        exchange=f'chat_server',
+                        routing_key='rpc_queue',
+                        body=texted,
+                        properties=pika.BasicProperties(headers={'pid': str(self.user_id), 'session': str(self.game_name), 'time': 'day'}))
+                    self.rabbit_mq_writer.deleted()
         print("Choose player id to vote for him, write id")
         name_to_deal = int(input())
         self.stub.KillPlayerVote(my_pb2.KillVoteRequest(session=self.game_name, id=name_to_deal))

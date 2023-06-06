@@ -19,6 +19,16 @@ class MafiaServerStub(object):
                 request_serializer=my__pb2.SetUserNameRequest.SerializeToString,
                 response_deserializer=my__pb2.ConnectedPlayers.FromString,
                 )
+        self.GetConnectedPlayers = channel.unary_unary(
+                '/MafiaServer/GetConnectedPlayers',
+                request_serializer=my__pb2.SessionName.SerializeToString,
+                response_deserializer=my__pb2.ConnectedPlayersOnly.FromString,
+                )
+        self.GetMafiaPlayers = channel.unary_unary(
+                '/MafiaServer/GetMafiaPlayers',
+                request_serializer=my__pb2.SessionName.SerializeToString,
+                response_deserializer=my__pb2.ConnectedPlayersOnly.FromString,
+                )
         self.GetNotifications = channel.unary_stream(
                 '/MafiaServer/GetNotifications',
                 request_serializer=my__pb2.NotificationsRequest.SerializeToString,
@@ -65,6 +75,18 @@ class MafiaServerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def SetUserName(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetConnectedPlayers(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetMafiaPlayers(self, request, context):
         """Missing associated documentation comment in .proto file."""
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
@@ -125,6 +147,16 @@ def add_MafiaServerServicer_to_server(servicer, server):
                     servicer.SetUserName,
                     request_deserializer=my__pb2.SetUserNameRequest.FromString,
                     response_serializer=my__pb2.ConnectedPlayers.SerializeToString,
+            ),
+            'GetConnectedPlayers': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetConnectedPlayers,
+                    request_deserializer=my__pb2.SessionName.FromString,
+                    response_serializer=my__pb2.ConnectedPlayersOnly.SerializeToString,
+            ),
+            'GetMafiaPlayers': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetMafiaPlayers,
+                    request_deserializer=my__pb2.SessionName.FromString,
+                    response_serializer=my__pb2.ConnectedPlayersOnly.SerializeToString,
             ),
             'GetNotifications': grpc.unary_stream_rpc_method_handler(
                     servicer.GetNotifications,
@@ -190,6 +222,40 @@ class MafiaServer(object):
         return grpc.experimental.unary_unary(request, target, '/MafiaServer/SetUserName',
             my__pb2.SetUserNameRequest.SerializeToString,
             my__pb2.ConnectedPlayers.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetConnectedPlayers(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/MafiaServer/GetConnectedPlayers',
+            my__pb2.SessionName.SerializeToString,
+            my__pb2.ConnectedPlayersOnly.FromString,
+            options, channel_credentials,
+            insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
+
+    @staticmethod
+    def GetMafiaPlayers(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(request, target, '/MafiaServer/GetMafiaPlayers',
+            my__pb2.SessionName.SerializeToString,
+            my__pb2.ConnectedPlayersOnly.FromString,
             options, channel_credentials,
             insecure, call_credentials, compression, wait_for_ready, timeout, metadata)
 

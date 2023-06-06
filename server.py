@@ -44,6 +44,21 @@ class Server(my_pb2_grpc.MafiaServerServicer):
                 return i
         return None
 
+    def GetConnectedPlayers(self, request, context):
+        connected_players = []
+        for i in self.games[request.session].id_to_info:
+            if self.games[request.session].id_to_info[i].role != 'killed':
+                connected_players.append(str(i))
+        return my_pb2.ConnectedPlayersOnly(names=connected_players)
+
+    def GetMafiaPlayers(self, request, context):
+        connected_players = []
+        for i in self.games[request.session].id_to_info:
+            if self.games[request.session].id_to_info[i].role == 'mafia':
+                connected_players.append(str(i))
+        return my_pb2.ConnectedPlayersOnly(names=connected_players)
+
+
     def SetUserName(self, request, context):
         print("SET USER NAME")
         self.games[request.session].user_id += 1
@@ -161,7 +176,7 @@ class Server(my_pb2_grpc.MafiaServerServicer):
 if __name__ == '__main__':
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     my_pb2_grpc.add_MafiaServerServicer_to_server(Server(), server)
-    listen_addr = '[::]:8080'
+    listen_addr = 'localhost:8080'
     server.add_insecure_port(listen_addr)
     server.start()
     server.wait_for_termination()

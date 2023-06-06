@@ -2,6 +2,8 @@ syntax = "proto3";
 
 service MafiaServer {
   rpc SetUserName (SetUserNameRequest) returns (ConnectedPlayers) {}
+  rpc GetConnectedPlayers (SessionName) returns (ConnectedPlayersOnly) {}
+  rpc GetMafiaPlayers (SessionName) returns (ConnectedPlayersOnly) {}
   rpc GetNotifications (NotificationsRequest) returns (stream NotificationsResponse) {}
   rpc Disconnect (DisconnectRequest) returns (Empty) {}
   rpc SetReadyStatus (ReadyRequest) returns (ReadyResponse) {}
@@ -15,6 +17,14 @@ service MafiaServer {
 message SetUserNameRequest {
   string session = 1;
   string name = 2;
+}
+
+message SessionName {
+  string session = 1;
+}
+
+message ConnectedPlayersOnly {
+  repeated string names = 1;
 }
 
 message ConnectedPlayers {

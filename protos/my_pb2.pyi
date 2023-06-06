@@ -21,6 +21,12 @@ class ConnectedPlayers(_message.Message):
     names: _containers.RepeatedScalarFieldContainer[str]
     def __init__(self, id: _Optional[int] = ..., names: _Optional[_Iterable[str]] = ...) -> None: ...
 
+class ConnectedPlayersOnly(_message.Message):
+    __slots__ = ["names"]
+    NAMES_FIELD_NUMBER: _ClassVar[int]
+    names: _containers.RepeatedScalarFieldContainer[str]
+    def __init__(self, names: _Optional[_Iterable[str]] = ...) -> None: ...
+
 class DisconnectRequest(_message.Message):
     __slots__ = ["id", "session"]
     ID_FIELD_NUMBER: _ClassVar[int]
@@ -110,6 +116,12 @@ class ReadyResponse(_message.Message):
     players: _containers.RepeatedScalarFieldContainer[str]
     role: str
     def __init__(self, role: _Optional[str] = ..., players: _Optional[_Iterable[str]] = ..., ids: _Optional[_Iterable[int]] = ...) -> None: ...
+
+class SessionName(_message.Message):
+    __slots__ = ["session"]
+    SESSION_FIELD_NUMBER: _ClassVar[int]
+    session: str
+    def __init__(self, session: _Optional[str] = ...) -> None: ...
 
 class SetUserNameRequest(_message.Message):
     __slots__ = ["name", "session"]
