@@ -1,6 +1,6 @@
-запуск сервера:
+запуск серверов:
 ```
-python3 ./server.py
+docker-compose build && docker-compose up
 ```
 запуск клиента:
 ```
