@@ -14,7 +14,7 @@ services:
 
 
     server:
-        image: annabogacheva/server_mafia_rpc
+        image: annabogacheva/server_mafia_rpc_kill
         container_name: server
         ports:
             - "8080:8080/tcp"
