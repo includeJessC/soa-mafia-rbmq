@@ -56,6 +56,7 @@ def main():
             stub.GetConnectedPlayers(my_pb2.SessionName(session=''))
         except:
             print("cannot connect")
+            stub = None
             pass
     server = RabbitMQServer('rabbitmq')
 
